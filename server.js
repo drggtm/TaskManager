@@ -1,11 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const path = require('path');
 const Task = require('./models/Task');
+
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
@@ -31,6 +34,10 @@ app.get('/api/tasks', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
