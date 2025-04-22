@@ -99,21 +99,3 @@ The workflow will:
 |--------|-------------|-------------------|-------------------------------------|
 | GET    | /api/tasks  | Get all tasks     | None                                |
 | POST   | /api/tasks  | Create a new task | `{ "title": "", "description": ""}` |
-
-## Frontend
-
-The frontend provides a simple interface to:
-- Add new tasks with a title and optional description
-- View all tasks in a table format with creation timestamps
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
