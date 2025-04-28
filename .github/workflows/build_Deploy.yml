@@ -1,9 +1,9 @@
 name: Build and Deploy
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 jobs:
   build-and-push:
@@ -50,13 +50,22 @@ jobs:
         uses: azure/setup-kubectl@v4
         with:
           version: 'latest'
-      - name: Configure Kubernetes credentials
-        uses: azure/k8s-set-context@v4
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - name: Decode and set KUBECONFIG
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
+          export KUBECONFIG=$(pwd)/kubeconfig
+          kubectl config view
       - name: Get short SHA
         id: sha
         run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Verify Helm chart
+        run: |
+          ls -R ./helm/task-manager
+          if [ ! -f ./helm/task-manager/Chart.yaml ]; then
+            echo "Error: Chart.yaml is missing"
+            exit 1
+          fi
+          helm version
       - name: Deploy with Helm
         run: |
           cat > values-override.yaml << EOF
@@ -72,8 +81,10 @@ jobs:
                   - path: /
                     pathType: Prefix
           EOF
+          cat values-override.yaml
           helm upgrade --install task-manager ./helm/task-manager \
             --namespace task-manager \
             --create-namespace \
             -f values-override.yaml \
-            --wait --timeout 5m
+            --wait --timeout 5m \
+            --debug
