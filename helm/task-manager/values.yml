@@ -1,11 +1,9 @@
-#App copies
 replicaCount: 2
 
-#Docker image
 image:
   repository: ghcr.io/placeholder/task-manager
   tag: latest
-  pullPolicy: IfNotPresent #if image not on server
+  pullPolicy: Always
 
 service:
   type: ClusterIP
@@ -14,14 +12,14 @@ service:
 
 ingress:
   enabled: true
-  host: task-manager.local
-  path: /
-  pathType: Prefix
-
-mongodb:
-  uri: "from_ci_CD"
-  existingSecret: ""
-  existingSecretKey: "mongo-uri"
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: task-manager.local 
+      paths:
+        - path: /
+          pathType: Prefix
 
 resources:
   limits:
@@ -31,19 +29,5 @@ resources:
     cpu: 200m
     memory: 256Mi
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
-
-ingress:
-  enabled: true
-  className: "nginx"
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  hosts:
-    - host: task-manager.local
-      path:
-      - path: /
-      pathType: Prefix
+mongodb:
+  uri: "" 

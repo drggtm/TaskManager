@@ -1,18 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{include "task-manager.fullname" . }}
+  name: {{ .Release.Name }}-task-manager
   labels:
-    {{- include "task-manager.labels" . | nindent 4 }}
+    app: task-manager
+    release: {{ .Release.Name }}
 spec:
-  type: {{.Values.service.type}}
-  ports: {{.Values.service.port}}
-  targetPort: {{ .Values.service.targetPort}}
-  protocol: TCP
-  name: http
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: http
   selector:
-    {{- include "task-manager.selectorLabels" . | nindent 4}}
-  # ports:
-  #   - protocol: TCP
-  #     port: 80
-  #     targetPort: 9376
+    app: task-manager
+    release: {{ .Release.Name }}
